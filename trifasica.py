@@ -3,6 +3,8 @@ import matplotlib.patches as patches
 import math as m
 
 
+
+
 class Complejo:
     def __init__(self):
         self.x=0
@@ -49,13 +51,26 @@ class Complejo:
         self.Rec()
     
     def invertir(self):
-        self.a= a + m.pi
+        self.a= self.a - m.pi
         self.Rec()
     
     def admitancia(self,z):
         self.r= 1/z.r
         self.a = -1 * z.a
         self.Rec()
+
+    def componer(self,u1,u2):
+        print(f"DEBUG VOLTAJE DE LINEA USN {u2.x} ; {u2.y} <====> {u2.r} ; {u2.a}")
+        u2.invertir()
+        print(f"DEBUG VOLTAJE DE LINEA UNS {u2.x} ; {u2.y} <====> {u2.r} ; {u2.a}")
+        self.x= u1.x + u2.x
+        self.y= u1.y + u2.y
+        self.Pol()
+
+    def resta(self,z1,z2):
+        self.x= z1.x-z2.x
+        self.y=z1.y-z2.y
+        self.Pol()
 
 def desplazamiento(self): #TODO
     x=0
@@ -69,7 +84,10 @@ usn.crearPol(220,240*m.pi/180)
 urs=Complejo()
 utr=Complejo()
 ust=Complejo()
-urs.suma(urn,)
+urs.componer(urn,usn[:])
+#urs.resta(urn,usn)
+print(f"DEBUG VOLTAJE DE LINEA URS {urs.x} ; {urs.y} <====> {urs.r} ; {urs.a}")
+print(f"DEBUG VOLTAJE DE LINEA USN {usn.x} ; {usn.y} <====> {usn.r} ; {usn.a}")
 zr=Complejo()
 zs=Complejo()
 zt=Complejo()
