@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import math as m
-
+import numpy as np
 
 def Pol(z):
     z['r']=m.sqrt(pow(z['x'],2)+pow(z['y'],2))
@@ -37,6 +37,11 @@ def producto(zt,z1,z2):
     zt['a']=float(z1['a'] + z2['a'])
     Rec(zt)
 
+def division(zt,z1,z2):
+    zt['r']=float(z1['r']/z2['r'])
+    zt['a']=float(z1['a']-z2['a'])
+    Rec(zt)
+
 def admitancia(y,z):
     y['r']=float(1/z['r'])
     y['a']=float(-1*z['a'])
@@ -54,6 +59,34 @@ def desplazamiento():
     producto(iro,yr,urn)
     producto(iso,ys,usn)
     producto(ito,yr,utn)
+    numerador=dict()
+    suma3(numerador,iro,iso,ito)
+    denominador=dict()
+    suma3(denominador,yr,ys,yt)
+    division(uno,numerador,denominador)
+
+def mostrar(z):
+    if(z['x'] < 0.00000001):
+        z['x'] =0
+    if(z['y'] < 0.00000001):
+        z['y'] =0
+    if(z['r'] < 0.00000001):
+        z['r'] =0
+    print(f"{z['x']} ; {z['y']} <================> {z['r']} ; {z['a']*m.pi/180}")
+
+def plot():
+    ax=plt.subplot()
+    ax.quiver(0,0,float(urn['x']),float(urn['y']), angles='xy',scale_units='xy', scale=1, color="red")
+    ax.quiver(0,0,float(usn['x']),float(usn['y']), angles='xy',scale_units='xy', scale=1, color="blue")
+    ax.quiver(0,0,float(utn['x']),float(utn['y']), angles='xy',scale_units='xy', scale=1, color="green")
+    ax.quiver(0,0,float(uno['x']),float(uno['y']), angles='xy',scale_units='xy', scale=1, color="black")
+    ax.set_xlim(-300,300)
+    ax.set_ylim(-300,300)
+    plt.xlabel("X")
+    plt.xlabel("Y")
+    plt.grid()
+    plt.show()
+
 
 
 
@@ -108,6 +141,12 @@ yt=dict()
 admitancia(yr,zr)
 admitancia(ys,zs)
 admitancia(yt,zt)
+uno=dict()
+desplazamiento()
+print(uno)
+mostrar(uno)
+plot()
+
 
 #crearRec(zr,3,4)
 #crearPol(z2,5,-53.13*m.pi/180)
