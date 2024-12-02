@@ -2,6 +2,15 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import math as m
 import numpy as np
+from reportlab.pdfgen.canvas import Canvas
+from reportlab.lib.units import cm, inch
+from PIL import *
+from reportlab.lib.utils import ImageReader
+
+rtodeg= 180/m.pi
+
+degfor= "{:.3f}"
+modfor="{:.5f}"
 
 def Pol(z):
     z['r']=m.sqrt(pow(z['x'],2)+pow(z['y'],2))
@@ -87,14 +96,23 @@ def plotFasorial():
     ax.quiver(0,0,float(usn['x']),float(usn['y']), angles='xy',scale_units='xy', scale=1, color="blue")
     ax.quiver(0,0,float(utn['x']),float(utn['y']), angles='xy',scale_units='xy', scale=1, color="green")
     ax.quiver(0,0,float(uno['x']),float(uno['y']), angles='xy',scale_units='xy', scale=1, color="black")
-    ax.quiver(float(uno['x']),float(uno['y']),float(uro['x']),float(uro['y']),angles='xy',scale_units='xy',scale=1,color="red")   
-    ax.quiver(float(uno['x']),float(uno['y']),float(uso['x']),float(uso['y']),angles='xy',scale_units='xy',scale=1,color="blue")
-    ax.quiver(float(uno['x']),float(uno['y']),float(uto['x']),float(uto['y']),angles='xy',scale_units='xy',scale=1,color="green")
+    ax.quiver(float(uno['x']),float(uno['y']),float(uro['x']),float(uro['y']),angles='xy',scale_units='xy',scale=1,color="orange")   
+    ax.quiver(float(uno['x']),float(uno['y']),float(uso['x']),float(uso['y']),angles='xy',scale_units='xy',scale=1,color="lightblue")
+    ax.quiver(float(uno['x']),float(uno['y']),float(uto['x']),float(uto['y']),angles='xy',scale_units='xy',scale=1,color="lightgreen")
     ax.set_xlim(-800,800)
-    ax.set_ylim(-800,800)
+    ax.set_ylim(-500,500)
     plt.xlabel("X")
     plt.xlabel("Y")
+    ax.plot([],[],color="red",label="urn")
+    ax.plot([],[],color="blue",label="usn")
+    ax.plot([],[],color="green",label="utn")
+    ax.plot([],[],color="black",label="uno")
+    ax.plot([],[],color="orange",label="uro")
+    ax.plot([],[],color="lightblue",label="uso")
+    ax.plot([],[],color="lightgreen",label="uto")
+    ax.legend()
     plt.grid()
+    plt.savefig("fasorial.png")
     plt.show()
 
 def plotTriangulo():
@@ -104,18 +122,27 @@ def plotTriangulo():
     bx.quiver(float(ust['x']+urs['x']),float(ust['y']+urs['y']),float(utr['x']),float(utr['y']),angles='xy',scale_units='xy',scale=1,color="green")
 
 
-    bx.quiver(0,0,float(uro['x']),float(uro['y']),angles='xy',scale_units='xy',scale=1,color="orange")
-    bx.quiver(float(urs['x']),float(urs['y']),float(uso['x']),float(uso['y']),angles='xy',scale_units='xy',scale=1,color="lightblue")
-    bx.quiver(float(ust['x']+urs['x']),float(ust['y']+urs['y']),float(uto['x']),float(uto['y']),angles='xy',scale_units='xy',scale=1,color="lightgreen")
+    bx.quiver(0,0,float(uro['x']),float(uro['y']),angles='xy',scale_units='xy',scale=1,color="orange",width=0.005)
+    bx.quiver(float(urs['x']),float(urs['y']),float(uso['x']),float(uso['y']),angles='xy',scale_units='xy',scale=1,color="lightblue",width=0.005)
+    bx.quiver(float(ust['x']+urs['x']),float(ust['y']+urs['y']),float(uto['x']),float(uto['y']),angles='xy',scale_units='xy',scale=1,color="lightgreen",width=0.005)
     
-    bx.quiver(0,0,float(urn['x']),float(urn['y']),angles='xy',scale_units='xy',scale=1,color="grey")
-    bx.quiver(float(urs['x']),float(urs['y']),float(usn['x']),float(usn['y']),angles='xy',scale_units='xy',scale=1,color="grey")
-    bx.quiver(float(ust['x']+urs['x']),float(ust['y']+urs['y']),float(utn['x']),float(utn['y']),angles='xy',scale_units='xy',scale=1,color="grey")
+    bx.quiver(0,0,float(urn['x']),float(urn['y']),angles='xy',scale_units='xy',scale=1,color="grey",width=0.0035)
+    bx.quiver(float(urs['x']),float(urs['y']),float(usn['x']),float(usn['y']),angles='xy',scale_units='xy',scale=1,color="grey",width=0.0035)
+    bx.quiver(float(ust['x']+urs['x']),float(ust['y']+urs['y']),float(utn['x']),float(utn['y']),angles='xy',scale_units='xy',scale=1,color="grey",width=0.0035)
 
     bx.quiver(float(urn['x']),float(urn['y']),float(uno['x']),float(uno['y']),angles='xy',scale_units='xy',scale=1,color="black")
     
-    bx.set_xlim(-100,450)
-    bx.set_ylim(-450,450)
+    bx.set_xlim(-100,550)
+    bx.set_ylim(-500,500)
+    bx.plot([],[],color="red",label="urn")
+    bx.plot([],[],color="blue",label="usn")
+    bx.plot([],[],color="green",label="utn")
+    bx.plot([],[],color="black",label="uno")
+    bx.plot([],[],color="orange",label="uro")
+    bx.plot([],[],color="lightblue",label="uso")
+    bx.plot([],[],color="lightgreen",label="uto")
+    bx.legend()
+    plt.savefig("triangulo.png")
     plt.show()
 
 def iniciarVoltajes():
@@ -125,6 +152,19 @@ def iniciarVoltajes():
     resta(urs,urn,usn)
     resta(ust,usn,utn)
     resta(utr,utn,urn)
+
+def generarReporte():
+    canvas=Canvas("Reporte.pdf")
+    canvas.drawCentredString(0,11.5 * inch,"Valores de impedancias y voltajes cargados: ")
+    canvas.drawString(18,11.0*inch,f"URN= {modfor.format(urn['r'])} ; {degfor.format(urn['a']*rtodeg)} USN= {modfor.format(usn['r'])} ; {degfor.format(usn['a']*rtodeg)} UTN= {modfor.format(utn['r'])} ; {degfor.format(utn['a']*rtodeg)}")
+    canvas.drawString(18,10.75 *inch,f"URS= {modfor.format(urs['r'])} ; {degfor.format(urs['a']*rtodeg)}    UST= {modfor.format(ust['r'])} ; {degfor.format(ust['a']*rtodeg)}     UTR= {modfor.format(utr['r'])} ; {degfor.format(utr['a']*rtodeg)}")
+    canvas.drawString(18,10.5*inch,f"ZR= ({zr['x']}; {zr['y']}) ======> {modfor.format(zr['r'])} ; {degfor.format(zr['a']*rtodeg)}")
+    canvas.drawString(18,10.25*inch,f"ZS= ({zs['x']}; {zs['y']}) ======> {modfor.format(zs['r'])} ; {degfor.format(zs['a']*rtodeg)}")
+    canvas.drawString(18,10.0*inch,f"ZT= ({zt['x']}; {zt['y']}) ======> {modfor.format(zt['r'])} ; {degfor.format(zt['a']*rtodeg)}")
+
+    im1=ImageReader("fasorial.png")
+    canvas.drawImage(im1,0,72,mask="auto")
+    canvas.save()
     
 
 
@@ -174,6 +214,7 @@ if(opcionImp == 2):
     y=float(input("Ingrese el valor de la parte imaginaria de Zt: "))
     print(f"los valores ingresador son: {x}, {y}")
     crearRec(zt,x,y)
+
 if(opcionImp==3):
     crearRec(zr,15,20)
     crearRec(zs,15,-15)
@@ -197,6 +238,7 @@ suma(uso,usn,uno)
 suma(uto,utn,uno)
 plotFasorial()
 plotTriangulo()
+generarReporte()
 
 
 #crearRec(zr,3,4)
