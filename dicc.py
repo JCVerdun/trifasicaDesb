@@ -6,12 +6,28 @@ from reportlab.pdfgen.canvas import Canvas
 from reportlab.lib.units import cm, inch
 from PIL import *
 from reportlab.lib.utils import ImageReader
+import configparser
 
+'''PASAJE DE RADIAN A DEGREE'''
 rtodeg= 180/m.pi
-
+degtor= m.pi/180
+'''FORMATS PARA MOSTRAR DATOS'''
 degfor= "{:.3f}"
 modfor="{:.5f}"
 
+
+'''LEO EL ARCHIVO DE CONFIG PARA CARGA DE DATOS'''
+def leerConfig():
+    config = configparser.ConfigParser()
+    config.readfp(open(r'voltajes.config'))
+    fase = float(config['PARAMETROS']['VOLTAJE_FASE'])
+    sec = int(config['PARAMETROS']['SECUENCIA'])
+    phi = float(config['PARAMETROS']['PHI_INICIAL'])
+    print(fase,phi,sec)
+    iniciarVoltajes(fase,sec,phi)
+    return sec
+
+'''FUNCIONES AUXIXLIARES DE NUMEROS COMPLEJOS'''
 def Pol(z):
     z['r']=m.sqrt(pow(z['x'],2)+pow(z['y'],2))
     z['a']=m.atan(z['y']/z['x'])
@@ -22,7 +38,7 @@ def Rec(z):
 
 def crearPol(z,r,a):
     z['r']=r
-    z['a']=a*m.pi/180
+    z['a']=a*degtor
     Rec(z)
 
 
@@ -62,7 +78,7 @@ def admitancia(y,z):
     Rec(y)
 
 
-
+'''CALCULO DE VOLTAJE DE DESPLAZAMIENTO'''
 def desplazamiento():
     iro=dict()
     iso=dict()
@@ -76,20 +92,11 @@ def desplazamiento():
     suma3(denominador,yr,ys,yt)
     division(uno,numerador,denominador)
 
+'''FUNCION PARA MOSTRAR LOS COMPLEJOS'''
 def mostrar(z):
-    tmp=dict()
-    tmp['x']=z['x']
-    tmp['y']=z['y']
-    tmp['r']=z['r']
-    tmp['a']=z['a']
-    if(tmp['x'] < 0.00000001):
-        tmp['x'] =0
-    if(tmp['y'] < 0.00000001):
-        tmp['y'] =0
-    if(tmp['r'] < 0.00000001):
-        tmp['r'] =0
-    print(f"{tmp['x']} ; {tmp['y']} <================> {tmp['r']} ; {tmp['a']*m.pi/180}")
+    print(f"{modfor.format(z['x'])} ; {modfor.format(z['y'])} ========> {modfor.format(z['r'])} ; {degfor.format(z['a']*rtodeg)}")
 
+'''PLOTEO DIAGRAMA FASORIAL'''
 def plotFasorial():
     ax=plt.subplot()
     ax.quiver(0,0,float(urn['x']),float(urn['y']), angles='xy',scale_units='xy', scale=1, color="red")
@@ -113,76 +120,127 @@ def plotFasorial():
     ax.legend()
     plt.grid()
     plt.savefig("fasorial.png")
-    plt.show()
+    #plt.show()
 
-def plotTriangulo():
+'''PLOTEO DE GRAICO EN FORMA DE TRIANGULO'''
+def plotTriangulo(secuencia):
     bx=plt.subplot()
-    bx.quiver(0,0,float(urs['x']),float(urs['y']),angles='xy',scale_units='xy',scale=1,color="red")
-    bx.quiver(float(urs['x']),float(urs['y']),float(ust['x']),float(ust['y']),angles='xy',scale_units='xy',scale=1,color="blue")
-    bx.quiver(float(ust['x']+urs['x']),float(ust['y']+urs['y']),float(utr['x']),float(utr['y']),angles='xy',scale_units='xy',scale=1,color="green")
+    bx.clear()
+    print(secuencia)
+    if(secuencia == 1):
+        print("SECUENCIA 1")
+        '''VOLTAJES DE LINEA'''
+        bx.quiver(0,0,float(urs['x']),float(urs['y']),angles='xy',scale_units='xy',scale=1,color="red")
+        bx.quiver(float(urs['x']),float(urs['y']),float(ust['x']),float(ust['y']),angles='xy',scale_units='xy',scale=1,color="blue")
+        bx.quiver(float(ust['x']+urs['x']),float(ust['y']+urs['y']),float(utr['x']),float(utr['y']),angles='xy',scale_units='xy',scale=1,color="green")
+        
+        '''VOLTAJES RESPECTO CENTRO DE ESTRELLA'''
+        bx.quiver(0,0,float(uro['x']),float(uro['y']),angles='xy',scale_units='xy',scale=1,color="orange",width=0.005)
+        bx.quiver(float(urs['x']),float(urs['y']),float(uso['x']),float(uso['y']),angles='xy',scale_units='xy',scale=1,color="lightblue",width=0.005)
+        bx.quiver(float(ust['x']+urs['x']),float(ust['y']+urs['y']),float(uto['x']),float(uto['y']),angles='xy',scale_units='xy',scale=1,color="lightgreen",width=0.005)
+        
+        '''VOLTAJES DE FASE RESPECTO DEL NEUTRO'''
+        bx.quiver(0,0,float(urn['x']),float(urn['y']),angles='xy',scale_units='xy',scale=1,color="grey",width=0.0035)
+        bx.quiver(float(urs['x']),float(urs['y']),float(usn['x']),float(usn['y']),angles='xy',scale_units='xy',scale=1,color="grey",width=0.0035)
+        bx.quiver(float(ust['x']+urs['x']),float(ust['y']+urs['y']),float(utn['x']),float(utn['y']),angles='xy',scale_units='xy',scale=1,color="grey",width=0.0035)
 
-
-    bx.quiver(0,0,float(uro['x']),float(uro['y']),angles='xy',scale_units='xy',scale=1,color="orange",width=0.005)
-    bx.quiver(float(urs['x']),float(urs['y']),float(uso['x']),float(uso['y']),angles='xy',scale_units='xy',scale=1,color="lightblue",width=0.005)
-    bx.quiver(float(ust['x']+urs['x']),float(ust['y']+urs['y']),float(uto['x']),float(uto['y']),angles='xy',scale_units='xy',scale=1,color="lightgreen",width=0.005)
+        bx.plot([],[],color="red",label="urn")
+        bx.plot([],[],color="blue",label="usn")
+        bx.plot([],[],color="green",label="utn")
+        bx.plot([],[],color="black",label="uno")
+        bx.plot([],[],color="orange",label="uro")
+        bx.plot([],[],color="lightblue",label="uso")
+        bx.plot([],[],color="lightgreen",label="uto")
+        bx.legend()
     
-    bx.quiver(0,0,float(urn['x']),float(urn['y']),angles='xy',scale_units='xy',scale=1,color="grey",width=0.0035)
-    bx.quiver(float(urs['x']),float(urs['y']),float(usn['x']),float(usn['y']),angles='xy',scale_units='xy',scale=1,color="grey",width=0.0035)
-    bx.quiver(float(ust['x']+urs['x']),float(ust['y']+urs['y']),float(utn['x']),float(utn['y']),angles='xy',scale_units='xy',scale=1,color="grey",width=0.0035)
+    
+    elif(secuencia==2):
+        print("SECUENCIA 2")
+        '''VOLTAJES DE LINEA'''
+        bx.quiver(0,0,float(uts['x']),float(uts['y']),angles='xy',scale_units='xy',scale=1,color="red")
+        bx.quiver(float(uts['x']),float(uts['y']),float(usr['x']),float(usr['y']),angles='xy',scale_units='xy',scale=1,color="blue")
+        bx.quiver(float(usr['x']+uts['x']),float(usr['y']+uts['y']),float(urt['x']),float(urt['y']),angles='xy',scale_units='xy',scale=1,color="green")
+        
+        '''VOLTAJES DE FASE RESPECTO A CENTRO DE ESTRELLA'''
+        bx.quiver(0,0,float(uto['x']),float(uto['y']),angles='xy',scale_units='xy',scale=1,color="orange",width=0.005)
+        bx.quiver(float(usr['x']),float(usr['y']),float(uso['x']),float(uso['y']),angles='xy',scale_units='xy',scale=1,color="lightblue",width=0.005)
+        bx.quiver(float(usr['x']+uts['x']),float(usr['y']+uts['y']),float(uro['x']),float(uro['y']),angles='xy',scale_units='xy',scale=1,color="lightgreen",width=0.005)
+        
+        '''VOLTAJES DE FASE RESPECTO A NEUTRO'''
+        bx.quiver(0,0,float(utn['x']),float(utn['y']),angles='xy',scale_units='xy',scale=1,color="grey",width=0.0035)
+        bx.quiver(float(usr['x']),float(usr['y']),float(usn['x']),float(usn['y']),angles='xy',scale_units='xy',scale=1,color="grey",width=0.0035)
+        bx.quiver(float(usr['x']+uts['x']),float(usr['y']+uts['y']),float(utn['x']),float(utn['y']),angles='xy',scale_units='xy',scale=1,color="grey",width=0.0035)
+
+
 
     bx.quiver(float(urn['x']),float(urn['y']),float(uno['x']),float(uno['y']),angles='xy',scale_units='xy',scale=1,color="black")
     
-    bx.set_xlim(-100,550)
-    bx.set_ylim(-500,500)
-    bx.plot([],[],color="red",label="urn")
-    bx.plot([],[],color="blue",label="usn")
-    bx.plot([],[],color="green",label="utn")
-    bx.plot([],[],color="black",label="uno")
-    bx.plot([],[],color="orange",label="uro")
-    bx.plot([],[],color="lightblue",label="uso")
-    bx.plot([],[],color="lightgreen",label="uto")
-    bx.legend()
+    bx.set_xlim(-450,450)
+    bx.set_ylim(-450,450)
+
+    
     plt.savefig("triangulo.png")
     plt.show()
 
-def iniciarVoltajes():
-    crearPol(urn,220,0)
-    crearPol(usn,220,240)
-    crearPol(utn,220,120)
-    resta(urs,urn,usn)
-    resta(ust,usn,utn)
-    resta(utr,utn,urn)
-
+'''GENERO REPORTE PDF'''
 def generarReporte():
     canvas=Canvas("Reporte.pdf")
-    canvas.drawCentredString(0,11.5 * inch,"Valores de impedancias y voltajes cargados: ")
-    canvas.drawString(18,11.0*inch,f"URN= {modfor.format(urn['r'])} ; {degfor.format(urn['a']*rtodeg)} USN= {modfor.format(usn['r'])} ; {degfor.format(usn['a']*rtodeg)} UTN= {modfor.format(utn['r'])} ; {degfor.format(utn['a']*rtodeg)}")
+    canvas.drawString(18,11.5 * inch,"Valores de impedancias y voltajes cargados: ")
+    canvas.drawString(18,11.0*inch,f"URN= {modfor.format(urn['r'])} ; {degfor.format(urn['a']*rtodeg)}    USN= {modfor.format(usn['r'])} ; {degfor.format(usn['a']*rtodeg)}     UTN= {modfor.format(utn['r'])} ; {degfor.format(utn['a']*rtodeg)}")
     canvas.drawString(18,10.75 *inch,f"URS= {modfor.format(urs['r'])} ; {degfor.format(urs['a']*rtodeg)}    UST= {modfor.format(ust['r'])} ; {degfor.format(ust['a']*rtodeg)}     UTR= {modfor.format(utr['r'])} ; {degfor.format(utr['a']*rtodeg)}")
-    canvas.drawString(18,10.5*inch,f"ZR= ({zr['x']}; {zr['y']}) ======> {modfor.format(zr['r'])} ; {degfor.format(zr['a']*rtodeg)}")
-    canvas.drawString(18,10.25*inch,f"ZS= ({zs['x']}; {zs['y']}) ======> {modfor.format(zs['r'])} ; {degfor.format(zs['a']*rtodeg)}")
-    canvas.drawString(18,10.0*inch,f"ZT= ({zt['x']}; {zt['y']}) ======> {modfor.format(zt['r'])} ; {degfor.format(zt['a']*rtodeg)}")
+    canvas.drawString(18,10.5*inch,f"ZR= ({modfor.format(zr['x'])}; {modfor.format(zr['y'])}) ======> {modfor.format(zr['r'])} ; {degfor.format(zr['a']*rtodeg)}")
+    canvas.drawString(18,10.25*inch,f"ZS= ({modfor.format(zs['x'])}; {modfor.format(zs['y'])}) ======> {modfor.format(zs['r'])} ; {degfor.format(zs['a']*rtodeg)}")
+    canvas.drawString(18,10.0*inch,f"ZT= ({modfor.format(zt['x'])}; {modfor.format(zt['y'])}) ======> {modfor.format(zt['r'])} ; {degfor.format(zt['a']*rtodeg)}")
 
     im1=ImageReader("fasorial.png")
     canvas.drawImage(im1,0,72,mask="auto")
+    canvas.showPage()
+    im2=ImageReader("triangulo.png")
+    canvas.drawImage(im2,0,72,mask="auto")
     canvas.save()
+
+'''INICIALIZO LOS VOLTAJES SEGUN CONFIG'''
+def iniciarVoltajes(v,op,phi):
+    if(op == 1):
+        crearPol(urn,v,phi)
+        crearPol(usn,v,(phi+240))
+        crearPol(utn,v,(phi+120))
+        resta(urs,urn,usn)
+        resta(ust,usn,utn)
+        resta(utr,utn,urn)
+    if(op == 2):
+        crearPol(utn,v,phi)
+        crearPol(usn,v,phi+240)
+        crearPol(urn,v,phi+120)
+        resta(uts,utn,usn)
+        resta(usr,usn,urn)
+        resta(urt,urn,utn)
+
     
 
 
+    
+
+#INICIALIZO LAS VARIABLES
 urn=dict()
 usn=dict()
 utn=dict()
 urs=dict()
 ust=dict()
 utr=dict()
-iniciarVoltajes()
-
-
+uts=dict()
+usr=dict()
+urt=dict()
 zr=dict()
 zs=dict()
 zt=dict()
+#LEO CONFIG Y CARGO VALORES DE VOLTAJES DE FASE Y DE LINEA
+secuencia=leerConfig()
+mostrar(urs)
+mostrar(ust)
+mostrar(utr)
 
-selectFlag=False
-
+#INGRESO DE DATOS DE IMPEDANCIAS
 print("===========================INGRESO DE DATOS DE IMPEDANCIAS============================")
 print("Seleccione sobre las siguientes opciones: ")
 print("Opcion 1: Carga de impedancias en Polar \nOpcion 2: Carga de impedancias en Rectangular")
@@ -219,25 +277,37 @@ if(opcionImp==3):
     crearRec(zr,15,20)
     crearRec(zs,15,-15)
     crearRec(zt,25,40)
+    mostrar(zr)
+    mostrar(zs)
+    mostrar(zt)
     
-
+#Obtengo las admitancias de cada impedancia 
 yr=dict()
 ys=dict()
 yt=dict()
 admitancia(yr,zr)
 admitancia(ys,zs)
 admitancia(yt,zt)
+mostrar(yr)
+mostrar(ys)
+mostrar(yt)
+
+#Inicializo voltaje de desplazamiento y lo calculo
 uno=dict()
 desplazamiento()
-mostrar(uno)
+
+
+#Obtengo los voltajes de fase respecto del centro de estrella 
 uro=dict()
 uso=dict()
 uto=dict()
 suma(uro,urn,uno)
 suma(uso,usn,uno)
 suma(uto,utn,uno)
+
+#Ploteo los graficos y genero el reporte correspondiente
 plotFasorial()
-plotTriangulo()
+plotTriangulo(secuencia)
 generarReporte()
 
 
