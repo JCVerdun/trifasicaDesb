@@ -4,8 +4,11 @@ import math as m
 import numpy as np
 from reportlab.pdfgen.canvas import Canvas
 from reportlab.lib.units import cm, inch
+from reportlab.lib.pagesizes import A4
 from PIL import *
 from reportlab.lib.utils import ImageReader
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
 import configparser
 
 '''PASAJE DE RADIAN A DEGREE'''
@@ -14,6 +17,10 @@ degtor= m.pi/180
 '''FORMATS PARA MOSTRAR DATOS'''
 degfor= "{:.3f}"
 modfor="{:.5f}"
+
+'''REGISTRO DE FUENTES TTF'''
+pdfmetrics.registerFont(TTFont('ISOCPEUR','ISOCPEUR.ttf'))
+
 
 
 '''LEO EL ARCHIVO DE CONFIG PARA CARGA DE DATOS'''
@@ -106,8 +113,8 @@ def plotFasorial():
     ax.quiver(float(uno['x']),float(uno['y']),float(uro['x']),float(uro['y']),angles='xy',scale_units='xy',scale=1,color="orange")   
     ax.quiver(float(uno['x']),float(uno['y']),float(uso['x']),float(uso['y']),angles='xy',scale_units='xy',scale=1,color="lightblue")
     ax.quiver(float(uno['x']),float(uno['y']),float(uto['x']),float(uto['y']),angles='xy',scale_units='xy',scale=1,color="lightgreen")
-    ax.set_xlim(-800,800)
-    ax.set_ylim(-500,500)
+    ax.set_xlim(-600,600)
+    ax.set_ylim(-600,600)
     plt.xlabel("X")
     plt.xlabel("Y")
     ax.plot([],[],color="red",label="urn")
@@ -122,7 +129,7 @@ def plotFasorial():
     plt.savefig("fasorial.png")
     #plt.show()
 
-'''PLOTEO DE GRAICO EN FORMA DE TRIANGULO'''
+'''PLOTEO DE GRAICO EN FORMA DE TRIANGULO''' #TODO SECUENCIA NEGATIVA
 def plotTriangulo(secuencia):
     bx=plt.subplot()
     bx.clear()
@@ -175,32 +182,44 @@ def plotTriangulo(secuencia):
 
     bx.quiver(float(urn['x']),float(urn['y']),float(uno['x']),float(uno['y']),angles='xy',scale_units='xy',scale=1,color="black")
     
-    bx.set_xlim(-450,450)
-    bx.set_ylim(-450,450)
+    bx.set_xlim(-525,525)
+    bx.set_ylim(-525,525)
 
     
     plt.savefig("triangulo.png")
-    plt.show()
+    #plt.show()
 
 '''GENERO REPORTE PDF'''
 def generarReporte():
     canvas=Canvas("Reporte.pdf")
-    canvas.drawString(18,11.5 * inch,"Valores de impedancias y voltajes cargados: ")
-    canvas.drawString(18,11.0*inch,f"URN= {modfor.format(urn['r'])} ; {degfor.format(urn['a']*rtodeg)}    USN= {modfor.format(usn['r'])} ; {degfor.format(usn['a']*rtodeg)}     UTN= {modfor.format(utn['r'])} ; {degfor.format(utn['a']*rtodeg)}")
-    canvas.drawString(18,10.75 *inch,f"URS= {modfor.format(urs['r'])} ; {degfor.format(urs['a']*rtodeg)}    UST= {modfor.format(ust['r'])} ; {degfor.format(ust['a']*rtodeg)}     UTR= {modfor.format(utr['r'])} ; {degfor.format(utr['a']*rtodeg)}")
-    canvas.drawString(18,10.5*inch,f"ZR= ({modfor.format(zr['x'])}; {modfor.format(zr['y'])}) ======> {modfor.format(zr['r'])} ; {degfor.format(zr['a']*rtodeg)}")
-    canvas.drawString(18,10.25*inch,f"ZS= ({modfor.format(zs['x'])}; {modfor.format(zs['y'])}) ======> {modfor.format(zs['r'])} ; {degfor.format(zs['a']*rtodeg)}")
-    canvas.drawString(18,10.0*inch,f"ZT= ({modfor.format(zt['x'])}; {modfor.format(zt['y'])}) ======> {modfor.format(zt['r'])} ; {degfor.format(zt['a']*rtodeg)}")
+    canvas.setFont('ISOCPEUR',32)
+    canvas.drawString(2.54*cm,A4[1] - 0.5*inch-20,"Valores de Voltajes cargados: ")
+    postTitle=A4[1] - 0.5*inch - 20
+    canvas.setFont('ISOCPEUR',14)
+    canvas.drawString(2.54*cm,postTitle-1.15*cm,f"URN= {modfor.format(urn['r'])}V ; {degfor.format(urn['a']*rtodeg)}°    USN= {modfor.format(usn['r'])}V ; {degfor.format(usn['a']*rtodeg)}°     UTN= {modfor.format(utn['r'])}V ; {degfor.format(utn['a']*rtodeg)}°")
+    canvas.drawString(2.54*cm,postTitle-1.15*cm-18,f"URS= {modfor.format(urs['r'])}V ; {degfor.format(urs['a']*rtodeg)}°    UST= {modfor.format(ust['r'])}V ; {degfor.format(ust['a']*rtodeg)}°     UTR= {modfor.format(utr['r'])}V ; {degfor.format(utr['a']*rtodeg)}°")
+    posTitle2=postTitle-1.5*cm-18
+    canvas.setFont('ISOCPEUR',32)
+    canvas.drawString(2.54*cm,posTitle2-20,"Valores de Impedancias cargados: ")
+    postTitle2=posTitle2-20
+    canvas.setFont('ISOCPEUR',14)
+    canvas.drawString(2.54*cm,postTitle2-1.15*cm-18,f"ZR= ({modfor.format(zr['x'])}; j{modfor.format(zr['y'])}) ======> {modfor.format(zr['r'])} ; {degfor.format(zr['a']*rtodeg)}°")
+    canvas.drawString(2.54*cm,postTitle2-1.15*cm-2*18,f"ZS= ({modfor.format(zs['x'])}; j{modfor.format(zs['y'])}) ======> {modfor.format(zs['r'])} ; {degfor.format(zs['a']*rtodeg)}°")
+    canvas.drawString(2.54*cm,postTitle2-1.15*cm-3*18,f"ZT= ({modfor.format(zt['x'])}; j{modfor.format(zt['y'])}) ======> {modfor.format(zt['r'])} ; {degfor.format(zt['a']*rtodeg)}°")
 
+
+    #canvas.drawString(2.54*cm,0.5*inch,"_________________________________A__________________________________________")
     im1=ImageReader("fasorial.png")
-    canvas.drawImage(im1,0,72,mask="auto")
+    size1=im1.getSize()
+    canvas.drawImage(im1,-5,0.5*inch,mask="auto",preserveAspectRatio="true")
     canvas.showPage()
+    #canvas.drawString(2.54*cm,A4[1]-0.5*inch,"________________________________________A_____________________________________________________-")
     im2=ImageReader("triangulo.png")
     canvas.drawImage(im2,0,72,mask="auto")
     canvas.save()
 
 '''INICIALIZO LOS VOLTAJES SEGUN CONFIG'''
-def iniciarVoltajes(v,op,phi):
+def iniciarVoltajes(v,op,phi):#TODO REVISAR SECUENCIA NEGATIVA
     if(op == 1):
         crearPol(urn,v,phi)
         crearPol(usn,v,(phi+240))
@@ -216,6 +235,47 @@ def iniciarVoltajes(v,op,phi):
         resta(usr,usn,urn)
         resta(urt,urn,utn)
 
+#INGRESO DE DATOS DE IMPEDANCIAS
+def cargarImpedancias():
+    print("===========================INGRESO DE DATOS DE IMPEDANCIAS============================")
+    print("Seleccione sobre las siguientes opciones: ")
+    print("Opcion 1: Carga de impedancias en Polar \nOpcion 2: Carga de impedancias en Rectangular")
+    opcionImp=int(input("Ingrese la opcion deseada: "))
+    if(opcionImp == 1):
+        r=float(input("Ingrese el valor del modulo de Zr: "))
+        a=float(input("Ingrese el valor del argumento de Zr:"))
+        print(f"los valores ingresador son: {r}, {a}")
+        crearPol(zr,r,a)
+        r=float(input("Ingrese el valor del modulo de Zs: "))
+        a=float(input("Ingrese el valor del argumento de Zs: "))
+        print(f"los valores ingresador son: {r}, {a}")
+        crearPol(zs,r,a)
+        r=float(input("Ingrese el valor del modulo de Zt: "))
+        a=float(input("Ingrese el valor del argumento de Zt: "))
+        print(f"los valores ingresador son: {r}, {a}")
+        crearPol(zt,r,a)
+
+    if(opcionImp == 2):
+        x=float(input("Ingrese el valor de la parte real de Zr: "))
+        y=float(input("Ingrese el valor de la parte imaginaria de Zr:"))
+        print(f"los valores ingresador son: {x}, {y}")
+        crearRec(zr,x,y)
+        x=float(input("Ingrese el valor de la parte real de Zs: "))
+        y=float(input("Ingrese el valor de la parte imaginaria de Zs: "))
+        print(f"los valores ingresador son: {x}, {y}")
+        crearRec(zs,x,y)
+        x=float(input("Ingrese el valor de la parte real de Zt: "))
+        y=float(input("Ingrese el valor de la parte imaginaria de Zt: "))
+        print(f"los valores ingresador son: {x}, {y}")
+        crearRec(zt,x,y)
+
+    if(opcionImp==3):
+        crearRec(zr,15,20)
+        crearRec(zs,15,-15)
+        crearRec(zt,25,40)
+        mostrar(zr)
+        mostrar(zs)
+        mostrar(zt)
     
 
 
@@ -240,46 +300,9 @@ mostrar(urs)
 mostrar(ust)
 mostrar(utr)
 
-#INGRESO DE DATOS DE IMPEDANCIAS
-print("===========================INGRESO DE DATOS DE IMPEDANCIAS============================")
-print("Seleccione sobre las siguientes opciones: ")
-print("Opcion 1: Carga de impedancias en Polar \nOpcion 2: Carga de impedancias en Rectangular")
-opcionImp=int(input("Ingrese la opcion deseada: "))
-if(opcionImp == 1):
-    r=float(input("Ingrese el valor del modulo de Zr: "))
-    a=float(input("Ingrese el valor del argumento de Zr:"))
-    print(f"los valores ingresador son: {r}, {a}")
-    crearPol(zr,r,a)
-    r=float(input("Ingrese el valor del modulo de Zs: "))
-    a=float(input("Ingrese el valor del argumento de Zs: "))
-    print(f"los valores ingresador son: {r}, {a}")
-    crearPol(zs,r,a)
-    r=float(input("Ingrese el valor del modulo de Zt: "))
-    a=float(input("Ingrese el valor del argumento de Zt: "))
-    print(f"los valores ingresador son: {r}, {a}")
-    crearPol(zt,r,a)
+#CARGO LOS VALORES DE LAS IMPEDANCIAS DE FASE
+cargarImpedancias()
 
-if(opcionImp == 2):
-    x=float(input("Ingrese el valor de la parte real de Zr: "))
-    y=float(input("Ingrese el valor de la parte imaginaria de Zr:"))
-    print(f"los valores ingresador son: {x}, {y}")
-    crearRec(zr,x,y)
-    x=float(input("Ingrese el valor de la parte real de Zs: "))
-    y=float(input("Ingrese el valor de la parte imaginaria de Zs: "))
-    print(f"los valores ingresador son: {x}, {y}")
-    crearRec(zs,x,y)
-    x=float(input("Ingrese el valor de la parte real de Zt: "))
-    y=float(input("Ingrese el valor de la parte imaginaria de Zt: "))
-    print(f"los valores ingresador son: {x}, {y}")
-    crearRec(zt,x,y)
-
-if(opcionImp==3):
-    crearRec(zr,15,20)
-    crearRec(zs,15,-15)
-    crearRec(zt,25,40)
-    mostrar(zr)
-    mostrar(zs)
-    mostrar(zt)
     
 #Obtengo las admitancias de cada impedancia 
 yr=dict()
@@ -311,7 +334,3 @@ plotTriangulo(secuencia)
 generarReporte()
 
 
-#crearRec(zr,3,4)
-#crearPol(z2,5,-53.13*m.pi/180)
-#suma(zt,zr,z2)
-#producto(zp,zr,z2)
