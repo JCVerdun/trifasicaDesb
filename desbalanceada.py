@@ -193,29 +193,36 @@ def plotTriangulo(secuencia):
 def generarReporte():
     canvas=Canvas("Reporte.pdf")
     canvas.setFont('ISOCPEUR',32)
-    canvas.drawString(2.54*cm,A4[1] - 0.5*inch-20,"Valores de Voltajes cargados: ")
-    postTitle=A4[1] - 0.5*inch - 20
-    canvas.setFont('ISOCPEUR',14)
-    canvas.drawString(2.54*cm,postTitle-1.15*cm,f"URN= {modfor.format(urn['r'])}V ; {degfor.format(urn['a']*rtodeg)}°    USN= {modfor.format(usn['r'])}V ; {degfor.format(usn['a']*rtodeg)}°     UTN= {modfor.format(utn['r'])}V ; {degfor.format(utn['a']*rtodeg)}°")
-    canvas.drawString(2.54*cm,postTitle-1.15*cm-18,f"URS= {modfor.format(urs['r'])}V ; {degfor.format(urs['a']*rtodeg)}°    UST= {modfor.format(ust['r'])}V ; {degfor.format(ust['a']*rtodeg)}°     UTR= {modfor.format(utr['r'])}V ; {degfor.format(utr['a']*rtodeg)}°")
-    posTitle2=postTitle-1.5*cm-18
+    canvas.drawString(2.54*cm,A4[1] - 0.75*inch-20,"Valores de Voltajes cargados: ")
+    postTitle=A4[1] - 0.75*inch - 20
+    canvas.setFont('ISOCPEUR',12)
+    canvas.drawString(2.54*cm,postTitle-1.15*cm,f"URN= {modfor.format(urn['r'])}V ; {degfor.format(urn['a']*rtodeg)}°   USN= {modfor.format(usn['r'])}V ; {degfor.format(usn['a']*rtodeg)}°    UTN= {modfor.format(utn['r'])}V ; {degfor.format(utn['a']*rtodeg)}°")
+    canvas.drawString(2.54*cm,postTitle-1.15*cm-18,f"URS= {modfor.format(urs['r'])}V ; {degfor.format(urs['a']*rtodeg)}°   UST= {modfor.format(ust['r'])}V ; {degfor.format(ust['a']*rtodeg)}°    UTR= {modfor.format(utr['r'])}V ; {degfor.format(utr['a']*rtodeg)}°")
+    posTitle2=postTitle-1.5*cm-2*18
     canvas.setFont('ISOCPEUR',32)
     canvas.drawString(2.54*cm,posTitle2-20,"Valores de Impedancias cargados: ")
-    postTitle2=posTitle2-20
-    canvas.setFont('ISOCPEUR',14)
-    canvas.drawString(2.54*cm,postTitle2-1.15*cm-18,f"ZR= ({modfor.format(zr['x'])}; j{modfor.format(zr['y'])}) ======> {modfor.format(zr['r'])} ; {degfor.format(zr['a']*rtodeg)}°")
-    canvas.drawString(2.54*cm,postTitle2-1.15*cm-2*18,f"ZS= ({modfor.format(zs['x'])}; j{modfor.format(zs['y'])}) ======> {modfor.format(zs['r'])} ; {degfor.format(zs['a']*rtodeg)}°")
-    canvas.drawString(2.54*cm,postTitle2-1.15*cm-3*18,f"ZT= ({modfor.format(zt['x'])}; j{modfor.format(zt['y'])}) ======> {modfor.format(zt['r'])} ; {degfor.format(zt['a']*rtodeg)}°")
-
+    postTitle2=posTitle2-18
+    canvas.setFont('ISOCPEUR',12)
+    canvas.drawString(2.54*cm,postTitle2-1.15*cm,f"ZR= ({modfor.format(zr['x'])}; {modfor.format(zr['y'])}j) ======> {modfor.format(zr['r'])} ; {degfor.format(zr['a']*rtodeg)}°")
+    canvas.drawString(2.54*cm,postTitle2-1.15*cm-18,f"ZS= ({modfor.format(zs['x'])}; {modfor.format(zs['y'])}j) ======> {modfor.format(zs['r'])} ; {degfor.format(zs['a']*rtodeg)}°")
+    canvas.drawString(2.54*cm,postTitle2-1.15*cm-2*18,f"ZT= ({modfor.format(zt['x'])}; {modfor.format(zt['y'])}j) ======> {modfor.format(zt['r'])} ; {degfor.format(zt['a']*rtodeg)}°")
 
     #canvas.drawString(2.54*cm,0.5*inch,"_________________________________A__________________________________________")
     im1=ImageReader("fasorial.png")
     size1=im1.getSize()
     canvas.drawImage(im1,-5,0.5*inch,mask="auto",preserveAspectRatio="true")
+
+    titleFasorialy=postTitle2-1.15*cm-2*18-4*cm
+    canvas.setFont('ISOCPEUR',32)
+    canvas.drawString(A4[0]/2 - 122,titleFasorialy,"DIAGRAMA FASORIAL")
+
     canvas.showPage()
+    canvas.setFont('ISOCPEUR',32)
     #canvas.drawString(2.54*cm,A4[1]-0.5*inch,"________________________________________A_____________________________________________________-")
     im2=ImageReader("triangulo.png")
-    canvas.drawImage(im2,0,72,mask="auto")
+    canvas.drawImage(im2,0,A4[1]/3,mask="auto",preserveAspectRatio="true")
+    canvas.drawString(A4[0]/2 - 150,A4[1] - 0.75*inch - 20,"TRIANGULO DE VOLTAJES")
+    
     canvas.save()
 
 '''INICIALIZO LOS VOLTAJES SEGUN CONFIG'''
