@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import math as m
-import numpy as np
 from reportlab.pdfgen.canvas import Canvas
 from reportlab.lib.units import cm, inch
 from reportlab.lib.pagesizes import A4
