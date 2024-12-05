@@ -35,4 +35,4 @@ Estos parametros son modificados previo a la ejecucion del programa desde el arc
 3. Ejecuta el siguiente comando para ejecutar el script:
 
 ```bash
-python desbalanceada.py
+python estrellaDesbalanceada.py
