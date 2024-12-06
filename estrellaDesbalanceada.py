@@ -29,7 +29,6 @@ def leerConfig():
     fase = float(config['PARAMETROS']['VOLTAJE_FASE'])
     sec = int(config['PARAMETROS']['SECUENCIA'])
     phi = float(config['PARAMETROS']['PHI_INICIAL'])
-    print(fase,phi,sec)
     iniciarVoltajes(fase,sec,phi)
     return sec
 
