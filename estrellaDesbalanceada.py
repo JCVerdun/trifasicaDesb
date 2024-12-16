@@ -196,7 +196,9 @@ def generarReporte():
     canvas.setFont('ISOCPEUR',12)
     canvas.drawString(2.54*cm,postTitle-1.15*cm,f"URN= {modfor.format(urn['r'])}V ; {degfor.format(urn['a']*rtodeg)}°   USN= {modfor.format(usn['r'])}V ; {degfor.format(usn['a']*rtodeg)}°    UTN= {modfor.format(utn['r'])}V ; {degfor.format(utn['a']*rtodeg)}°")
     canvas.drawString(2.54*cm,postTitle-1.15*cm-18,f"URS= {modfor.format(urs['r'])}V ; {degfor.format(urs['a']*rtodeg)}°   UST= {modfor.format(ust['r'])}V ; {degfor.format(ust['a']*rtodeg)}°    UTR= {modfor.format(utr['r'])}V ; {degfor.format(utr['a']*rtodeg)}°")
-    posTitle2=postTitle-1.5*cm-2*18
+    canvas.drawString(2.54*cm,postTitle-1.15*cm-2*18,f"URO= {modfor.format(uro['r'])}V ; {degfor.format(uro['a']*rtodeg)}°   USO= {modfor.format(uso['r'])}V ; {degfor.format(uso['a']*rtodeg)}°    UTO= {modfor.format(uto['r'])}V ; {degfor.format(uto['a']*rtodeg)}°")
+    canvas.drawString(2.54*cm,postTitle-1.15*cm-3*18,f"UNO= {modfor.format(uno['r'])}V ; {degfor.format(uno['a']*rtodeg)}°")
+    posTitle2=postTitle-1.5*cm-4*18
     canvas.setFont('ISOCPEUR',32)
     canvas.drawString(2.54*cm,posTitle2-20,"Valores de Impedancias cargados: ")
     postTitle2=posTitle2-18
@@ -210,7 +212,7 @@ def generarReporte():
     size1=im1.getSize()
     canvas.drawImage(im1,-5,0.5*inch,mask="auto",preserveAspectRatio="true")
 
-    titleFasorialy=postTitle2-1.15*cm-2*18-4*cm
+    titleFasorialy=postTitle2-1.15*cm-4*cm
     canvas.setFont('ISOCPEUR',32)
     canvas.drawString(A4[0]/2 - 122,titleFasorialy,"DIAGRAMA FASORIAL")
 
