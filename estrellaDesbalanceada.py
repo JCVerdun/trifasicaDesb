@@ -36,6 +36,11 @@ def leerConfig():
 def Pol(z):
     z['r']=m.sqrt(pow(z['x'],2)+pow(z['y'],2))
     z['a']=m.atan(z['y']/z['x'])
+    if(z['x']< 0 and z['y']>=0):
+        z['a'] -= 180 * degtor
+    if(z['y']< 0 and z['a']>=0):
+        z['a'] -= 180 * degtor
+
 
 def Rec(z):
     z['x']= z['r'] * m.cos(z['a'])
@@ -85,17 +90,17 @@ def admitancia(y,z):
 
 '''CALCULO DE VOLTAJE DE DESPLAZAMIENTO'''
 def desplazamiento():
-    iro=dict()
-    iso=dict()
-    ito=dict()
-    producto(iro,yr,urn)
-    producto(iso,ys,usn)
-    producto(ito,yr,utn)
     numerador=dict()
-    suma3(numerador,iro,iso,ito)
+    suma3(numerador,irn,isn,itn)
+    #mostrar(numerador)
     denominador=dict()
     suma3(denominador,yr,ys,yt)
+    #mostrar(denominador)
     division(uno,numerador,denominador)
+    print("UON:::")
+    mostrar(uno)
+    uno['a'] -= m.pi
+    Rec(uno)
 
 '''FUNCION PARA MOSTRAR LOS COMPLEJOS'''
 def mostrar(z):
@@ -206,22 +211,29 @@ def generarReporte():
     canvas.drawString(2.54*cm,postTitle2-1.15*cm,f"ZR= ({modfor.format(zr['x'])}; {modfor.format(zr['y'])}j) ======> {modfor.format(zr['r'])} ; {degfor.format(zr['a']*rtodeg)}°")
     canvas.drawString(2.54*cm,postTitle2-1.15*cm-18,f"ZS= ({modfor.format(zs['x'])}; {modfor.format(zs['y'])}j) ======> {modfor.format(zs['r'])} ; {degfor.format(zs['a']*rtodeg)}°")
     canvas.drawString(2.54*cm,postTitle2-1.15*cm-2*18,f"ZT= ({modfor.format(zt['x'])}; {modfor.format(zt['y'])}j) ======> {modfor.format(zt['r'])} ; {degfor.format(zt['a']*rtodeg)}°")
+    canvas.setFont("ISOCPEUR",32)
+    canvas.drawString(2.54*cm,postTitle2-1.15*cm-4*18,"Corrientes de la carga")
+    canvas.setFont("ISOCPEUR",12)
+    canvas.drawString(2.54*cm,postTitle2-1.15*cm-5*18,f"IRO= {modfor.format(iro['r'])}A ; {degfor.format(iro['a']*rtodeg)}°   ISO= {modfor.format(iso['r'])}A ; {degfor.format(iso['a']*rtodeg)}°    ITO= {modfor.format(ito['r'])}A ; {degfor.format(ito['a']*rtodeg)}°")
+    canvas.drawString(2.54*cm,postTitle2-1.15*cm-6*18,f"IRN= {modfor.format(irn['r'])}A ; {degfor.format(irn['a']*rtodeg)}°   ISN= {modfor.format(isn['r'])}A ; {degfor.format(isn['a']*rtodeg)}°    ITN= {modfor.format(itn['r'])}A ; {degfor.format(itn['a']*rtodeg)}°")
+    
 
     #canvas.drawString(2.54*cm,0.5*inch,"_________________________________A__________________________________________")
+    #canvas.showPage()
     im1=ImageReader("fasorial.png")
     size1=im1.getSize()
-    canvas.drawImage(im1,-5,0.5*inch,mask="auto",preserveAspectRatio="true")
+    canvas.drawImage(im1,60,0.5*inch,480,480,mask="auto",preserveAspectRatio="true")
 
-    titleFasorialy=postTitle2-1.15*cm-4*cm
+    titleFasorialy=0.5*inch + 400
     canvas.setFont('ISOCPEUR',32)
-    canvas.drawString(A4[0]/2 - 122,titleFasorialy,"DIAGRAMA FASORIAL")
+    canvas.drawString(A4[0]/2 - 150,titleFasorialy,"DIAGRAMA FASORIAL")
 
     canvas.showPage()
     canvas.setFont('ISOCPEUR',32)
     #canvas.drawString(2.54*cm,A4[1]-0.5*inch,"________________________________________A_____________________________________________________-")
     im2=ImageReader("triangulo.png")
-    canvas.drawImage(im2,0,A4[1]/3,mask="auto",preserveAspectRatio="true")
-    canvas.drawString(A4[0]/2 - 150,A4[1] - 0.75*inch - 20,"TRIANGULO DE VOLTAJES")
+    canvas.drawImage(im2,60,A4[1]/3 + 72,480,480,mask="auto",preserveAspectRatio="true")
+    canvas.drawString(A4[0]/2 - 160,A4[1]-0.75* inch - 20,"TRIANGULO DE VOLTAJES")
     
     canvas.save()
 
@@ -322,10 +334,19 @@ mostrar(yr)
 mostrar(ys)
 mostrar(yt)
 
+
+irn=dict()
+itn=dict()
+isn=dict()
+division(irn,urn,zr)
+division(isn,usn,zs)
+division(itn,utn,zt)
+
 #Inicializo voltaje de desplazamiento y lo calculo
 uno=dict()
 desplazamiento()
-
+print("UNO: ")
+mostrar(uno)
 
 #Obtengo los voltajes de fase respecto del centro de estrella 
 uro=dict()
@@ -334,10 +355,19 @@ uto=dict()
 suma(uro,urn,uno)
 suma(uso,usn,uno)
 suma(uto,utn,uno)
+#CALCULO DE CORRIENTES DE LINEA SIN NEUTRO Y CON NEUTRO
+iro=dict()
+ito=dict()
+iso=dict()
+division(iro,uro,zr)
+division(iso,uso,zs)
+division(ito,uto,zt)
+
 
 #Ploteo los graficos y genero el reporte correspondiente
 plotFasorial()
 plotTriangulo(secuencia)
 generarReporte()
+
 
 
