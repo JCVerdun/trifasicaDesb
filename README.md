@@ -26,8 +26,13 @@ Estos parametros son modificados previo a la ejecucion del programa desde el arc
 
 1. Clona este repositorio o descarga los archivos en tu máquina local.
 2. Asegúrate de tener Python instalado. Puedes descargarlo desde [python.org](https://www.python.org/downloads/).
-3. Descargar e Instalar las bibliotecas de matplotlib, PIL, reportlab y configparser. Todas ellas pueden obtenerse mediante pip install por linea de comandos.
-
+3. Descargar e Instalar las bibliotecas de matplotlib, pillow (PIL), reportlab y configparser. Todas ellas pueden obtenerse mediante pip install por linea de comandos.
+```bash
+pip install matplotlib
+pip install pillow
+pip install reportlab
+pip install configparser   
+```
 ## Uso
 
 1. Descarga o clona el repositorio.
