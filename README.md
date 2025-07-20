@@ -49,8 +49,3 @@ python estrellaDesbalanceada.py
 
 [![Abrir en Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/JCVerdun/trifasicaDesb/HEAD?filepath=estrellaDesbalanceada.py)
 
-👉 También podés abrirlo como entorno en la nube con GitHub Codespaces:
-
-[![Abrir en Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?repo=JCVerdun/trifasicaDesb)
-
----
